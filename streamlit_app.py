@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 
 # Page setup
 st.set_page_config(page_title="Deepfake Defender", page_icon="🛡️", layout="centered")
@@ -15,6 +16,12 @@ uploaded_file = st.file_uploader("Upload file (JPG, PNG, MP4, MOV, TXT, PDF)", t
 if uploaded_file:
     st.success("✅ File uploaded successfully!")
     st.info("Analyzing file... Please wait.")
+
+    # --- Show image preview if image ---
+    if uploaded_file.type.startswith("image/"):
+        image = Image.open(uploaded_file)
+        st.subheader("🖼️ Uploaded Image Preview")
+        st.image(image, caption="Uploaded Image", use_column_width=True)
 
     # --- Mock model output ---
     suspicion_scores = np.random.uniform(0.25, 0.45, size=20)  # Example values
@@ -57,4 +64,3 @@ if uploaded_file:
     - **Confidence Score**: {confidence_percent}%  
     - **Suspicion Timeline**: Shows anomalies across different parts of the input.  
     """)
-
