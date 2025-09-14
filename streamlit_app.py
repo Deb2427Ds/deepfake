@@ -2,48 +2,59 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Title & description
-st.set_page_config(page_title="Deepfake Defender", page_icon="🛡️", layout="wide")
-st.title("🛡️ Deepfake Defender – AI-powered Fake News & Deepfake Detector")
-st.markdown("Upload an **image, video, or article screenshot** to analyze authenticity.")
+# Page setup
+st.set_page_config(page_title="Deepfake Defender", page_icon="🛡️", layout="centered")
 
-# Upload input
-uploaded_file = st.file_uploader("Upload file (JPG, PNG, MP4, MOV, PDF, TXT)", type=["jpg","jpeg","png","mp4","mov","avi","pdf","txt"])
+# Title
+st.title("🛡️ Deepfake Defender")
+st.markdown("AI-powered tool to detect **deepfakes & misinformation** in images, videos, and articles.")
+
+# File uploader
+uploaded_file = st.file_uploader("Upload file (JPG, PNG, MP4, MOV, TXT, PDF)", type=["jpg","jpeg","png","mp4","mov","avi","txt","pdf"])
 
 if uploaded_file:
     st.success("✅ File uploaded successfully!")
-    st.info("Analyzing for deepfake or misinformation patterns...")
+    st.info("Analyzing file... Please wait.")
 
-    # --- Mocked model output (replace with real model later) ---
-    suspicion_scores = np.random.uniform(0.25, 0.45, size=20)  # 20 timeline points
-    avg_confidence = 1 - suspicion_scores.mean()  # Higher = more real
+    # --- Mock model output ---
+    suspicion_scores = np.random.uniform(0.25, 0.45, size=20)  # Example values
+    avg_confidence = 1 - suspicion_scores.mean()  
     confidence_percent = int(avg_confidence * 100)
 
     # --- Verdict ---
     if confidence_percent > 70:
-        verdict = f"✅ Likely Real (Confidence: {confidence_percent}%)"
+        verdict = f"✅ Likely Real"
         color = "green"
     elif confidence_percent > 40:
-        verdict = f"⚠️ Suspicious (Confidence: {confidence_percent}%)"
+        verdict = f"⚠️ Suspicious"
         color = "orange"
     else:
-        verdict = f"❌ Likely Fake (Confidence: {confidence_percent}%)"
+        verdict = f"❌ Likely Fake"
         color = "red"
 
-    st.markdown(f"<h3 style='color:{color};text-align:center'>{verdict}</h3>", unsafe_allow_html=True)
+    # Show verdict card
+    st.markdown(f"""
+    <div style="text-align:center; border-radius:15px; padding:20px; background-color:#f5f5f5">
+        <h2 style="color:{color};">{verdict}</h2>
+        <h4>Confidence Score: {confidence_percent}%</h4>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # --- Suspicion Timeline Graph ---
-    fig, ax = plt.subplots()
-    ax.plot(suspicion_scores, marker='o')
-    ax.set_title("📊 Timeline Suspicion Score")
-    ax.set_xlabel("Segment")
-    ax.set_ylabel("Suspicion Score (0 = Real, 1 = Fake)")
+    # --- Smaller Suspicion Timeline Graph ---
+    st.subheader("📊 Suspicion Timeline")
+    fig, ax = plt.subplots(figsize=(6,3))  # smaller figure
+    ax.plot(suspicion_scores, marker='o', linewidth=2)
+    ax.set_title("Suspicion Score per Segment", fontsize=12)
+    ax.set_xlabel("Segment", fontsize=10)
+    ax.set_ylabel("Suspicion Score", fontsize=10)
+    ax.set_ylim([0,1])  # keep scale fixed
     st.pyplot(fig)
 
-    # --- Explanation ---
-    st.subheader("🔍 Explainability")
-    st.write("""
-    - **Suspicion Score per Segment**: Breaks the input into chunks (video frames / text segments).  
-    - **Confidence Score**: Overall authenticity likelihood.  
-    - **Why it matters**: Even if some parts are suspicious, the overall verdict reflects average reliability.  
+    # --- Explainability ---
+    st.subheader("🔍 Explanation")
+    st.write(f"""
+    - **Verdict**: {verdict}  
+    - **Confidence Score**: {confidence_percent}%  
+    - **Suspicion Timeline**: Shows anomalies across different parts of the input.  
     """)
+
